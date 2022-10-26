@@ -1,0 +1,1 @@
+aplico compresion pero la herramienta de analisis me tira un error al ser el /info un json
