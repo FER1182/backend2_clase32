@@ -12,14 +12,35 @@ import "./src/db/config.js";
 import { fork } from "child_process";
 import minimist from "minimist";
 import { clearScreenDown } from "readline";
-import compression from "compression"
-import log4js from "log4js"
+import compression from "compression";
+import log4js from "log4js";
+import { emitWarning } from "process";
 
 const LocalStrategy = Strategy;
 
 const app = express();
 
-app.use(compression())
+app.use(compression());
+
+/*============================[logs]============================*/
+log4js.configure({
+  appenders: {
+    miLoggerConsole: { type: "console" },
+    miLoggerFile: { type: "file", filename: "warn.log" },
+    miLoggerFile2: { type: "file", filename: "error.log" },
+  },
+  categories: {
+    archivo: { appenders: ["miLoggerFile"], level: "warn" },
+    archivo2: { appenders: ["miLoggerFile2"], level: "error" },
+    todos: { appenders: ["miLoggerConsole", "miLoggerFile2"], level: "info" },
+  },
+});
+
+const loggerWarn = log4js.getLogger("archivo");
+
+const loggerError = log4js.getLogger("archivo2");
+
+const loggerTodos = log4js.getLogger("todos");
 
 /*============================[Middlewares]============================*/
 
@@ -84,6 +105,8 @@ app.get("/", (req, res) => {
   } else {
     res.redirect("/login");
   }
+  loggerTodos.info(`metodo ${req.method} Ruta  ${req.originalUrl}`);
+  
 });
 
 app.get("/login", (req, res) => {
@@ -95,11 +118,16 @@ app.post(
   passport.authenticate("local", { failureRedirect: "login-error" }),
   (req, res) => {
     res.redirect("/datos");
+    loggerTodos.info(`metodo ${req.method} Ruta  ${req.originalUrl}`);
+
   }
+  
 );
 
 app.get("/register", (req, res) => {
   res.render("register");
+  loggerWarn.warn(`metodo ${req.method} Ruta  ${req.originalUrl}`);
+  
 });
 
 app.post("/register", (req, res) => {
@@ -141,7 +169,14 @@ app.get("/info", (req, res) => {
     carpetaProyecto: process.cwd(),
   };
 
-  res.send  (datos );
+  res.send(datos);
+});
+
+app.get("*", (req, res) => {
+  loggerTodos.warn(`metodo ${req.method} Ruta inexistente ${req.originalUrl}`);
+  const html= `<div> direccion no valida </div>`
+  res.status(404).send(html)
+
 });
 
 /* app.get("/api/randoms/", (req, res) => {
@@ -160,7 +195,7 @@ app.get("/info", (req, res) => {
 app.get("/api/randoms", (req, res) => {
   const calculo = fork("random.js");
   const num = req.query.cant;
-  console.log(num)
+  console.log(num);
   if (num) {
     calculo.on("message", (number) => {
       if (number == "listo") {
@@ -185,21 +220,6 @@ app.get("/logout", (req, res) => {
     res.redirect("/login");
   });
 });
-
-/*============================[logs]============================*/
-log4js.configure({
-  appenders: {
-    miLoggerConsole: { type: "console" },
-    miLoggerFile: { type: "file", filename: "warn.log" },
-    miLoggerFile2: { type: "file", filename: "error.log" },
-  },
-  categories: {
-    archivo: { appenders: ["miLoggerFile"], level: "warn" },
-    archivo2: { appenders: ["miLoggerFile2"], level: "error" },
-    todos: { appenders: ["miLoggerConsole", "miLoggerFile"], level: "error" },
-  },
-});
-
 
 /*============================[Servidor]============================*/
 const options = { default: { port: 8080 } };
