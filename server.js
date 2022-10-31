@@ -100,12 +100,13 @@ app.use(express.json());
 /*============================[Rutas]============================*/
 
 app.get("/", (req, res) => {
+  loggerTodos.info(`metodo ${req.method} Ruta  ${req.originalUrl}`);
   if (req.session.nombre) {
     res.redirect("/datos");
   } else {
     res.redirect("/login");
   }
-  loggerTodos.info(`metodo ${req.method} Ruta  ${req.originalUrl}`);
+  
   
 });
 
@@ -117,17 +118,17 @@ app.post(
   "/login",
   passport.authenticate("local", { failureRedirect: "login-error" }),
   (req, res) => {
-    res.redirect("/datos");
+    
     loggerTodos.info(`metodo ${req.method} Ruta  ${req.originalUrl}`);
-
+    res.redirect("/datos");
   }
   
 );
 
 app.get("/register", (req, res) => {
-  res.render("register");
-  loggerWarn.warn(`metodo ${req.method} Ruta  ${req.originalUrl}`);
   
+  loggerWarn.warn(`metodo ${req.method} Ruta  ${req.originalUrl}`);
+  res.render("register");
 });
 
 app.post("/register", (req, res) => {
