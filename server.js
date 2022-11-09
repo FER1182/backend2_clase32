@@ -30,6 +30,7 @@ log4js.configure({
     miLoggerFile2: { type: "file", filename: "error.log" },
   },
   categories: {
+    default: { appenders: ["miLoggerConsole"], level: "trace" },
     archivo: { appenders: ["miLoggerFile"], level: "warn" },
     archivo2: { appenders: ["miLoggerFile2"], level: "error" },
     todos: { appenders: ["miLoggerConsole", "miLoggerFile2"], level: "info" },
@@ -114,10 +115,7 @@ app.get("/login", (req, res) => {
   res.render("login");
 });
 
-app.post(
-  "/login",
-  passport.authenticate("local", { failureRedirect: "login-error" }),
-  (req, res) => {
+app.post("/login",passport.authenticate("local", { failureRedirect: "login-error" }),(req, res) => {
     
     loggerTodos.info(`metodo ${req.method} Ruta  ${req.originalUrl}`);
     res.redirect("/datos");

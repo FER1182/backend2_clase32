@@ -1,0 +1,5 @@
+[2022-11-09T18:51:30.267] [INFO] todos - metodo GET Ruta  /
+[2022-11-09T18:51:31.489] [WARN] todos - metodo GET Ruta inexistente /favicon.ico
+[2022-11-09T18:52:18.479] [WARN] todos - metodo GET Ruta inexistente /login-error
+[2022-11-09T18:53:01.730] [WARN] todos - metodo GET Ruta inexistente /login-error
+[2022-11-09T18:53:30.318] [INFO] todos - metodo POST Ruta  /login
